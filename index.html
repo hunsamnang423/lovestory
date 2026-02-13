@@ -3,197 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>សម្រាប់មនុស្សពិសេសរបស់ខ្ញុំ | My Eternal Love</title>
+    <title>អនុស្សាវរីយ៍ផ្អែមល្ហែម | Our Eternal Love</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@100;300;400;600;700&family=Freehand&display=swap" rel="stylesheet">
+    <!-- ការទាញយកពុម្ពអក្សរខ្មែរស្អាតៗ និងទំនើប -->
+    <link href="https://fonts.googleapis.com/css2?family=Koh+Santepheap:wght@100;300;400;700;900&family=Moul&family=Kantumruy+Pro:wght@100;300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --rose-primary: #e11d48;
+            --rose-light: #fff1f2;
+        }
+
         body {
             font-family: 'Kantumruy Pro', sans-serif;
             background: #fffafa;
-            color: #2d3436;
-            overflow-x: hidden;
+            color: #1e293b;
+            scroll-behavior: smooth;
         }
 
-        .cursive {
-            font-family: 'Freehand', cursive;
-        }
+        /* កំណត់ Font តាមប្រភេទអត្ថបទ */
+        .font-moul { font-family: 'Moul', serif; }
+        .font-modern { font-family: 'Kantumruy Pro', sans-serif; }
+        .font-standard { font-family: 'Koh Santepheap', sans-serif; }
 
-        /* ចលនាផ្កាកុលាបធ្លាក់ */
+        /* Animation: Floating Petals */
         .petal {
             position: fixed;
             top: -10%;
             z-index: 50;
             pointer-events: none;
             animation: fall linear forwards;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
 
         @keyframes fall {
-            to { transform: translateY(110vh) rotate(360deg); }
+            0% { transform: translateY(-10vh) rotate(0deg) translateX(0); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg) translateX(100px); opacity: 0; }
         }
 
-        /* Polaroid Effect */
+        /* Glassmorphism Effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Polaroid Hover Effect */
         .polaroid {
             background: white;
             padding: 12px 12px 35px 12px;
-            box-shadow: 0 10px 25px rgba(244, 63, 94, 0.15);
-            transform: rotate(-2deg);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .polaroid:nth-child(even) { transform: rotate(3deg); }
-        .polaroid:hover { transform: scale(1.05) rotate(0deg); z-index: 20; }
-
-        /* Music Wave Animation */
-        .bar {
-            width: 3px;
-            height: 10px;
-            background: #f43f5e;
-            display: inline-block;
-            margin: 0 1px;
-            animation: wave 1s ease-in-out infinite;
-            display: none;
-        }
-        .playing .bar { display: inline-block; }
-        .bar:nth-child(2) { animation-delay: 0.1s; }
-        .bar:nth-child(3) { animation-delay: 0.2s; }
-        .bar:nth-child(4) { animation-delay: 0.3s; }
-
-        @keyframes wave {
-            0%, 100% { height: 5px; }
-            50% { height: 15px; }
+        .polaroid:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(225, 29, 72, 0.1);
+            z-index: 20;
         }
 
+        /* Reveal Animation */
         .reveal {
             opacity: 0;
             transform: translateY(30px);
             transition: all 0.8s ease-out;
         }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-        .btn-play {
-            background: linear-gradient(135deg, #fb7185 0%, #e11d48 100%);
-            box-shadow: 0 10px 20px rgba(225, 29, 72, 0.3);
+        /* Music Bars */
+        .bar {
+            width: 3px;
+            height: 12px;
+            background: #e11d48;
+            border-radius: 2px;
+            animation: music-wave 1s ease-in-out infinite;
+        }
+        @keyframes music-wave {
+            0%, 100% { height: 6px; }
+            50% { height: 18px; }
         }
     </style>
 </head>
-<body>
+<body class="overflow-x-hidden">
 
-    <!-- បណ្តាញភ្ជាប់តន្ត្រី (អ្នកអាចដូរបណ្តាញភ្ជាប់ MP3 នៅទីនេះ) -->
+    <!-- Background Music -->
     <audio id="bgMusic" loop>
         <source src="samart.mp4" type="audio/mpeg">
     </audio>
 
     <!-- Floating Music Controls -->
-    <div id="music-container" class="fixed bottom-6 right-6 z-[100] flex items-center gap-3">
-        <div id="wave-container" class="bg-white/80 backdrop-blur-md px-3 py-2 rounded-full hidden items-center">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <span class="ml-2 text-xs font-bold text-rose-500 uppercase">Music ON</span>
+    <div class="fixed bottom-8 right-8 z-[100] flex items-center gap-4">
+        <div id="music-status" class="glass px-5 py-2 rounded-full hidden items-center gap-3 shadow-lg">
+            <div class="flex gap-1">
+                <div class="bar" style="animation-delay: 0.1s"></div>
+                <div class="bar" style="animation-delay: 0.3s"></div>
+                <div class="bar" style="animation-delay: 0.2s"></div>
+            </div>
+            <span class="text-xs font-bold text-rose-600 tracking-widest uppercase font-modern">កំពុងចាក់តន្ត្រី</span>
         </div>
-        <button id="music-toggle" class="btn-play w-14 h-14 rounded-full flex items-center justify-center text-white transition-all active:scale-90">
-            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9V3z"></path></svg>
-            <svg id="pause-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        <button id="music-toggle" class="bg-gradient-to-tr from-rose-500 to-rose-700 w-16 h-16 rounded-full flex items-center justify-center text-white shadow-xl transition-transform active:scale-90">
+            <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <svg id="pause-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
         </button>
     </div>
 
     <!-- Hero Section -->
-    <div class="relative h-screen flex flex-col items-center justify-center text-center px-6 bg-gradient-to-b from-rose-50 to-white">
+    <header class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden bg-gradient-to-b from-rose-50 to-white">
         <div class="z-10 reveal active">
-            <p class="cursive text-3xl text-rose-500 mb-2">Our Love Story</p>
-            <h1 class="text-4xl md:text-6xl font-bold text-slate-800 mb-6 leading-tight">
+            <p class="font-modern font-semibold text-rose-500 mb-4 tracking-[0.2em] uppercase text-sm">Our Eternal Love Story</p>
+            <h1 class="font-moul text-4xl md:text-7xl text-slate-800 mb-8 leading-[1.8] md:leading-[2.2]">
                 អនុស្សាវរីយ៍ដែល <br> <span class="text-rose-600">មានន័យបំផុត</span>
             </h1>
-            <button onclick="startExperience()" class="btn-play text-white px-8 py-3 rounded-full font-semibold animate-pulse">
-                ចុចទីនេះដើម្បីស្តាប់តន្ត្រី និងមើលរូបភាព
+            <p class="font-standard text-slate-500 mb-12 max-w-lg mx-auto leading-loose text-lg">
+                រាល់វិនាទីដែលបានកន្លងផុតទៅជាមួយអ្នក គឺជាអំណោយដ៏ថ្លៃថ្លាបំផុតក្នុងជីវិតរបស់ខ្ញុំ។
+            </p>
+            <button onclick="startExperience()" class="bg-rose-600 hover:bg-rose-700 text-white px-12 py-4 rounded-full font-bold text-lg shadow-xl transition-all transform hover:-translate-y-1 font-modern">
+                ចាប់ផ្តើមទស្សនា
             </button>
         </div>
-    </div>
+        
+        <div class="absolute bottom-10 animate-bounce text-rose-300">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+        </div>
+    </header>
 
     <!-- Anniversary Counter -->
-    <section class="py-20 px-6">
-        <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-2xl font-bold mb-10 text-slate-700 reveal">យើងបានដើររួមផ្លូវគ្នាអស់រយៈពេល...</h2>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 reveal">
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-rose-100">
-                    <span id="years" class="text-4xl font-bold text-rose-500">0</span>
-                    <p class="text-slate-400 text-sm mt-1">ឆ្នាំ</p>
+    <section class="py-24 px-6 relative">
+        <div class="max-w-5xl mx-auto text-center">
+            <h2 class="font-moul text-2xl md:text-3xl mb-16 text-slate-700 reveal">យើងបានដើររួមផ្លូវគ្នាអស់រយៈពេល...</h2>
+            
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 reveal">
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-rose-50 group hover:border-rose-200 transition-all">
+                    <span id="years" class="text-6xl font-bold text-rose-600 block mb-2 font-standard">0</span>
+                    <p class="text-slate-400 font-semibold uppercase tracking-widest text-xs font-modern">ឆ្នាំ</p>
                 </div>
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-rose-100">
-                    <span id="months" class="text-4xl font-bold text-rose-500">0</span>
-                    <p class="text-slate-400 text-sm mt-1">ខែ</p>
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-rose-50 group hover:border-rose-200 transition-all">
+                    <span id="months" class="text-6xl font-bold text-rose-600 block mb-2 font-standard">0</span>
+                    <p class="text-slate-400 font-semibold uppercase tracking-widest text-xs font-modern">ខែ</p>
                 </div>
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-rose-100">
-                    <span id="days" class="text-4xl font-bold text-rose-500">0</span>
-                    <p class="text-slate-400 text-sm mt-1">ថ្ងៃ</p>
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-rose-50 group hover:border-rose-200 transition-all">
+                    <span id="days" class="text-6xl font-bold text-rose-600 block mb-2 font-standard">0</span>
+                    <p class="text-slate-400 font-semibold uppercase tracking-widest text-xs font-modern">ថ្ងៃ</p>
                 </div>
-                <div class="bg-white p-6 rounded-3xl shadow-sm border border-rose-100">
-                    <span id="hours" class="text-4xl font-bold text-rose-500">0</span>
-                    <p class="text-slate-400 text-sm mt-1">ម៉ោង</p>
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-rose-50 group hover:border-rose-200 transition-all">
+                    <span id="hours" class="text-6xl font-bold text-rose-600 block mb-2 font-standard">0</span>
+                    <p class="text-slate-400 font-semibold uppercase tracking-widest text-xs font-modern">ម៉ោង</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Polaroid Gallery -->
-    <section class="py-16 px-6 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
-        <div class="polaroid reveal">
-            <img src="couple.jpg" class="w-full h-60 object-cover mb-4" alt="Memory">
-            <p class="cursive text-lg text-center text-slate-600">ថ្ងៃដែលពិភពលោកប្រែពណ៌</p>
+    <!-- Memory Gallery -->
+    <section class="py-32 px-6 max-w-6xl mx-auto">
+        <div class="text-center mb-20 reveal">
+            <p class="font-modern text-rose-500 font-bold mb-2 uppercase tracking-widest">Memories</p>
+            <h2 class="font-moul text-3xl md:text-4xl text-slate-800">កម្រងរូបភាពអនុស្សាវរីយ៍</h2>
         </div>
-        <div class="polaroid reveal" style="transition-delay: 150ms;">
-            <img src="haha.jpg" class="w-full h-60 object-cover mb-4" alt="Memory">
-            <p class="cursive text-lg text-center text-slate-600">ស្នាមញញឹមដ៏ស្រស់បំព្រង</p>
-        </div>
-        <div class="polaroid reveal" style="transition-delay: 300ms;">
-            <img src="smlie.jpg" class="w-full h-60 object-cover mb-4" alt="Memory">
-            <p class="cursive text-lg text-center text-slate-600">ក្តីស្រឡាញ់ដែលមិនចេះរីងស្ងួត</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <!-- Photo 1 -->
+            <div class="polaroid reveal">
+                <div class="overflow-hidden bg-slate-100 h-80 mb-6 rounded-lg">
+                    <img src="couple.jpg" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" alt="Memory 1" onerror="this.src='https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80'">
+                </div>
+                <p class="font-modern font-semibold text-lg text-center text-slate-700">ថ្ងៃដែលពិភពលោកប្រែពណ៌</p>
+            </div>
+
+            <!-- Photo 2 -->
+            <div class="polaroid reveal" style="transition-delay: 200ms;">
+                <div class="overflow-hidden bg-slate-100 h-80 mb-6 rounded-lg">
+                    <img src="haha.jpg" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" alt="Memory 2" onerror="this.src='https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?auto=format&fit=crop&q=80'">
+                </div>
+                <p class="font-modern font-semibold text-lg text-center text-slate-700">ស្នាមញញឹមដ៏ស្រស់បំព្រង</p>
+            </div>
+
+            <!-- Photo 3 -->
+            <div class="polaroid reveal" style="transition-delay: 400ms;">
+                <div class="overflow-hidden bg-slate-100 h-80 mb-6 rounded-lg">
+                    <img src="smlie.jpg" class="w-full h-full object-cover transition-transform duration-700 hover:scale-105" alt="Memory 3" onerror="this.src='https://images.unsplash.com/photo-1516589174184-c685266e48fc?auto=format&fit=crop&q=80'">
+                </div>
+                <p class="font-modern font-semibold text-lg text-center text-slate-700">ក្តីស្រឡាញ់ដែលមិនចេះរីងស្ងួត</p>
+            </div>
         </div>
     </section>
 
-    <!-- Final Message -->
-    <section class="py-24 px-6 max-w-2xl mx-auto">
-        <div class="bg-white p-10 md:p-14 rounded-[3rem] shadow-xl border border-rose-50 text-center reveal">
-            <div class="text-4xl mb-6">💌</div>
-            <h3 class="text-2xl font-bold text-rose-600 mb-8">ពាក្យអរគុណពីបេះដូង</h3>
-            <div class="space-y-6 text-slate-600 leading-relaxed italic">
-                <p>"អរគុណដែលបានចូលមកក្នុងជីវិតរបស់ខ្ញុំ និងបានធ្វើឱ្យគ្រប់វិនាទីមានន័យ។ អ្នកគឺជាអ្វីៗគ្រប់យ៉ាងសម្រាប់ខ្ញុំ។"</p>
-                <p>"សន្យាថានឹងនៅក្បែរគ្នា ថែរក្សាគ្នា និងស្រឡាញ់គ្នាឱ្យបានយូរបំផុតតាមដែលអាចធ្វើទៅបាន។"</p>
+    <!-- Deep Message -->
+    <section class="py-24 px-6 relative">
+        <div class="max-w-4xl mx-auto bg-white p-12 md:p-24 rounded-[3rem] shadow-xl border border-rose-50 text-center reveal">
+            <div class="text-6xl mb-10">💌</div>
+            <h3 class="font-moul text-2xl md:text-3xl text-rose-600 mb-12">សំបុត្រផ្ញើចេញពីបេះដូង</h3>
+            
+            <div class="space-y-10 text-slate-600 leading-[2.2] text-xl font-standard italic">
+                <p>"អរគុណដែលបានចូលមកក្នុងជីវិតរបស់ខ្ញុំ និងបានធ្វើឱ្យគ្រប់វិនាទីមានន័យ។ អ្នកមិនត្រឹមតែជាមិត្ត មិនត្រឹមតែជាសង្សារ តែអ្នកគឺជាពិភពលោកទាំងមូលរបស់ខ្ញុំ។"</p>
+                <p>"សន្យាថានឹងនៅក្បែរគ្នា ថែរក្សាគ្នា និងកាន់ដៃគ្នាដើរទៅមុខឱ្យបានយូរបំផុតតាមដែលអាចធ្វើទៅបាន ទោះបីជាមានឧបសគ្គយ៉ាងណាក៏ដោយ។"</p>
             </div>
-            <div class="mt-12">
-                <p class="cursive text-2xl text-rose-500">Love always, [ហ៊ុន សំណាង]</p>
+
+            <div class="mt-20 pt-12 border-t border-rose-50">
+                <p class="font-modern font-bold text-2xl text-rose-500 italic">ស្រឡាញ់អ្នកខ្លាំងណាស់, [ហ៊ុន សំណាង]</p>
             </div>
         </div>
     </section>
 
-    <footer class="py-12 text-center text-slate-400 text-sm">
-        <p>បង្កើតឡើងដោយក្តីស្រឡាញ់សម្រាប់អ្នក ✨</p>
+    <footer class="py-20 text-center text-slate-400 font-modern">
+        <p class="text-sm tracking-[0.2em] font-medium opacity-60">បង្កើតឡើងដោយក្តីស្រឡាញ់សម្រាប់អ្នក ✨ | 2026</p>
     </footer>
 
     <script>
         // --- CONFIGURATION ---
-        const startDay = new Date(2026, 1, 1); // កំណត់ថ្ងៃស្រឡាញ់គ្នា (YEAR, MONTH-1, DAY)
+        const startDay = new Date(2026, 1, 1); // កំណត់ថ្ងៃស្រឡាញ់គ្នា (ឆ្នាំ, ខែ-១, ថ្ងៃ)
         const music = document.getElementById('bgMusic');
         const musicToggle = document.getElementById('music-toggle');
-        const waveContainer = document.getElementById('wave-container');
+        const musicStatus = document.getElementById('music-status');
         const playIcon = document.getElementById('play-icon');
         const pauseIcon = document.getElementById('pause-icon');
 
         // Music Logic
         function toggleMusic() {
             if (music.paused) {
-                music.play();
-                waveContainer.classList.add('flex');
-                waveContainer.classList.remove('hidden');
-                document.getElementById('music-container').classList.add('playing');
+                music.play().catch(e => console.log("Audio play blocked"));
+                musicStatus.classList.replace('hidden', 'flex');
                 playIcon.classList.add('hidden');
                 pauseIcon.classList.remove('hidden');
             } else {
                 music.pause();
-                waveContainer.classList.add('hidden');
-                waveContainer.classList.remove('flex');
-                document.getElementById('music-container').classList.remove('playing');
+                musicStatus.classList.replace('flex', 'hidden');
                 playIcon.classList.remove('hidden');
                 pauseIcon.classList.add('hidden');
             }
@@ -202,46 +237,54 @@
         musicToggle.addEventListener('click', toggleMusic);
 
         function startExperience() {
-            toggleMusic();
-            window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+            if(music.paused) toggleMusic();
+            const nextSection = document.querySelector('section');
+            nextSection.scrollIntoView({ behavior: 'smooth' });
         }
 
         // Anniversary Counter
         function updateCounter() {
             const now = new Date();
             const diff = now - startDay;
-            document.getElementById('years').innerText = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
-            document.getElementById('months').innerText = Math.floor((diff % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44));
-            document.getElementById('days').innerText = Math.floor((diff % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
-            document.getElementById('hours').innerText = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+            const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+            const months = Math.floor((diff % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24 * 30.44));
+            const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30.44)) / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+            document.getElementById('years').innerText = years;
+            document.getElementById('months').innerText = months;
+            document.getElementById('days').innerText = days;
+            document.getElementById('hours').innerText = hours;
         }
         setInterval(updateCounter, 1000);
         updateCounter();
 
         // Petals Animation
+        const emojis = ['🌸', '✨', '❤️', '💖', '🌹'];
         function createPetal() {
             const petal = document.createElement('div');
-            petal.innerHTML = ['🌸', '✨', '❤️', '💖'][Math.floor(Math.random() * 4)];
+            petal.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
             petal.className = 'petal';
             petal.style.left = Math.random() * 100 + 'vw';
-            petal.style.fontSize = (Math.random() * 20 + 10) + 'px';
-            petal.style.animationDuration = (Math.random() * 5 + 5) + 's';
-            petal.style.opacity = Math.random();
+            petal.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            petal.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            petal.style.opacity = Math.random() * 0.7 + 0.3;
             document.body.appendChild(petal);
-            setTimeout(() => petal.remove(), 10000);
+            setTimeout(() => petal.remove(), 8000);
         }
-        setInterval(createPetal, 400);
+        setInterval(createPetal, 700);
 
         // Scroll Reveal
         function reveal() {
-            var reveals = document.querySelectorAll(".reveal");
-            for (var i = 0; i < reveals.length; i++) {
-                var windowHeight = window.innerHeight;
-                var elementTop = reveals[i].getBoundingClientRect().top;
+            const reveals = document.querySelectorAll(".reveal");
+            reveals.forEach(el => {
+                const windowHeight = window.innerHeight;
+                const elementTop = el.getBoundingClientRect().top;
                 if (elementTop < windowHeight - 100) {
-                    reveals[i].classList.add("active");
+                    el.classList.add("active");
                 }
-            }
+            });
         }
         window.addEventListener("scroll", reveal);
         window.onload = reveal;
